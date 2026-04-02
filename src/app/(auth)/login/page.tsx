@@ -1,4 +1,9 @@
+"use client";
+import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 export const authStyles = {
   input:
@@ -7,7 +12,67 @@ export const authStyles = {
     "w-full bg-purple-400 text-black font-semibold py-4 rounded-lg hover:opacity-90 transition duration-400 cursor-pointer",
 };
 
+interface RegisterValues {
+  email: string;
+  password: string;
+}
+
 export default function LoginPage() {
+
+  const [values, setValues] = useState<RegisterValues>({
+    email: "",
+    password: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, name } = e.target;
+
+    setValues((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleLogin = async (e: React.SubmitEvent) => {
+    e.preventDefault();
+
+    if (!values.email || !values.password) {
+      toast.error("Veuillez remplir tous les champs !");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { error } = await authClient.signIn.email({
+        email: values.email,
+        password: values.password,
+      });
+
+      if (error) {
+        toast.error(error.message as string);
+        return;
+      }
+
+      toast.success("Connexion réussie !");
+      setValues({
+        email: "",
+        password: "",
+      });
+      router.replace("/feed");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Une erreur est survenue lors de la connexion. Veuillez réessayer.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md rounded-2xl p-6 space-y-6">
@@ -17,18 +82,26 @@ export default function LoginPage() {
         <h1 className="text-2xl font-semibold text-white text-center">
           Se connecter
         </h1>
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleLogin}>
           <input
             type="email"
             placeholder="Votre mail"
             className={authStyles.input}
+            name="email"
+            value={values.email}
+            onChange={handleChange}
           />
           <input
             type="text"
             placeholder="Votre mot de passe"
             className={authStyles.input}
+            name="password"
+            value={values.password}
+            onChange={handleChange}
           />
-          <button className={authStyles.button}>Se connecter</button>
+          <button className={authStyles.button} disabled={loading}>
+            {loading ? "Connexion en cours..." : "Se connecter"}
+          </button>
         </form>
         <p className="text-center text-sm text-text-muted">
           Pas de compte ?{" "}
