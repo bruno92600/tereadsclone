@@ -1,5 +1,9 @@
+import Container from "@/components/layouts/Container";
+
 export default function FeedsPage() {
   return (
-    <div className="text-white">FeedPage</div>
+    <Container title="Pour toi">
+      <div className="text-white">feed page</div>
+    </Container>
   )
 }
