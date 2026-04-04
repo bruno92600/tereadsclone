@@ -1,6 +1,5 @@
 import MobileMenu from "@/components/general/MobileMenu";
 import Sidebar from "@/components/general/Sidebar";
-import ProfileModal from "@/components/modal/ProfileModal";
 import { requireAuth } from "@/server-actions/requireAuth";
 
 export default async function ProtectedRoute({
@@ -12,6 +11,5 @@ export default async function ProtectedRoute({
     {children}
     <Sidebar />
     <MobileMenu />
-    <ProfileModal />
   </div>;
 }

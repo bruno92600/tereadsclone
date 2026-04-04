@@ -3,23 +3,73 @@ import { useModalStore } from "@/store/useModalStore";
 import Modal from "./Modal";
 import { useState } from "react";
 import Image from "next/image";
+import { User } from "@/types/user";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { set } from "better-auth";
+import { useRouter } from "next/navigation";
 
-export default function ProfileModal() {
+interface ProfileModalProps {
+  userProfile: User;
+}
+
+export default function ProfileModal({ userProfile }: ProfileModalProps) {
   const { closeEditProfile, isEditProfileOpen } = useModalStore();
 
-  const [avatarPreview, setAvatarPreview] = useState(
-    "/images/IMG_1442 (1)-2.jpg",
-  );
-  const [name, setName] = useState("");
-  const [username, setUsername] = useState("");
-  const [bio, setBio] = useState("");
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState(userProfile.image);
+  const [name, setName] = useState(userProfile.name);
+  const [username, setUsername] = useState(userProfile.username);
+  const [bio, setBio] = useState(userProfile.bio);
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setAvatarFile(file);
+
     const previewURL = URL.createObjectURL(file);
     setAvatarPreview(previewURL);
+  };
+
+  const handleSubmit = async () => {
+    if (!username || !name) {
+      toast.error("Le nom et le nom d'utilisateur sont requis !");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("name", name || "");
+      formData.append("username", username || "");
+      formData.append("bio", bio || "");
+      if (avatarFile) {
+        formData.append("image", avatarFile);
+      }
+
+      await axios.patch("/api/profile/update", formData);
+
+      router.refresh();
+
+      closeEditProfile();
+
+      toast.success("Profil mis à jour avec succès !");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(error);
+        toast.error(
+          error?.response?.data?.error ||
+            "Une erreur est survenue lors de la mise à jour du profil",
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputStyles =
@@ -59,7 +109,7 @@ export default function ProfileModal() {
             type="text"
             placeholder="Votre nom"
             className={inputStyles}
-            value={name}
+            value={name || ""}
             onChange={(e) => setName(e.target.value)}
           />
         </div>
@@ -71,7 +121,7 @@ export default function ProfileModal() {
             type="text"
             placeholder="Votre nom d'utilisateur"
             className={inputStyles}
-            value={username}
+            value={username || ""}
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>
@@ -80,15 +130,19 @@ export default function ProfileModal() {
           <textarea
             placeholder="Votre description"
             className={`resize-none ${inputStyles}`}
-            value={bio}
+            value={bio || ""}
             rows={4}
             onChange={(e) => setBio(e.target.value)}
           />
         </div>
 
         <div className="flex justify-end">
-          <button className="bg-purple-700 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition cursor-pointer">
-            Enregistrer
+          <button
+            disabled={loading}
+            onClick={handleSubmit}
+            className="bg-purple-700 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition cursor-pointer"
+          >
+            {loading ? "Enregistrement..." : "Enregistrer"}
           </button>
         </div>
       </div>
