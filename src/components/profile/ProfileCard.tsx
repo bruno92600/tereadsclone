@@ -5,10 +5,12 @@ import { User } from "@/types/user";
 
 interface ProfileCardProps {
   userProfile: User;
+  currentUserId: string;
 }
 
-export default function ProfileCard({ userProfile }: ProfileCardProps) {
+export default function ProfileCard({ userProfile, currentUserId }: ProfileCardProps) {
   const { openEditProfile } = useModalStore();
+  const isOwnProfile = userProfile.id === currentUserId;
 
   return (
     <>
@@ -29,27 +31,29 @@ export default function ProfileCard({ userProfile }: ProfileCardProps) {
         />
       </div>
       <div className="flex gap-2 items-center text-sm text-purple-500 my-4">
-        <p>{userProfile._count.followers} abonnés</p>
-        <p>{userProfile._count.following} abonnements</p>
-        <p>{userProfile._count.posts} publications</p>
+        <p>{userProfile._count?.followers ?? 0} abonnés</p>
+        <p>{userProfile._count?.following ?? 0} abonnements</p>
+        <p>{userProfile._count?.posts ?? 0} publications</p>
       </div>
 
       {userProfile.bio ? (
         <p className="text-sm text-white/80 my-6">{userProfile.bio}</p>
-      ) : (
+      ) : isOwnProfile ? (
         <p
           className="text-sm text-purple-400 my-4 cursor-pointer"
           onClick={openEditProfile}
         >
           Ajouter une description
         </p>
-      )}
-      <button
+      ) : null}
+      {isOwnProfile ? <button
         onClick={openEditProfile}
         className="w-full py-1 border border-border text-white/90 rounded-lg cursor-pointer"
       >
         Modifier le profil
-      </button>
+      </button> : <button className="w-full py-1 border border-border text-white/90 rounded-lg cursor-pointer" disabled>
+        Suivre
+      </button>}
     </>
   );
 }

@@ -21,7 +21,7 @@ export default function Container({
         <header className="fixed top-0 left-0 w-full h-14 bg-background flex gap-4 items-center justify-center z-50">
           {showBackButton && (
             <button
-              onClick={() => router.back}
+              onClick={() => router.replace("/search")}
               className="text-white hover:text-purple-500 transition"
             >
               <ArrowLeft size={22} className="cursor-pointer" />
