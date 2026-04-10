@@ -2,13 +2,17 @@
 import { useModalStore } from "@/store/useModalStore";
 import Avatar from "../ui/Avatar";
 import { User } from "@/types/user";
+import FollowButton from "../ui/FollowButton";
 
 interface ProfileCardProps {
   userProfile: User;
   currentUserId: string;
 }
 
-export default function ProfileCard({ userProfile, currentUserId }: ProfileCardProps) {
+export default function ProfileCard({
+  userProfile,
+  currentUserId,
+}: ProfileCardProps) {
   const { openEditProfile } = useModalStore();
   const isOwnProfile = userProfile.id === currentUserId;
 
@@ -46,14 +50,19 @@ export default function ProfileCard({ userProfile, currentUserId }: ProfileCardP
           Ajouter une description
         </p>
       ) : null}
-      {isOwnProfile ? <button
-        onClick={openEditProfile}
-        className="w-full py-1 border border-border text-white/90 rounded-lg cursor-pointer"
-      >
-        Modifier le profil
-      </button> : <button className="w-full py-1 border border-border text-white/90 rounded-lg cursor-pointer" disabled>
-        Suivre
-      </button>}
+      {isOwnProfile ? (
+        <button
+          onClick={openEditProfile}
+          className="w-full py-1 border border-border text-white/90 rounded-lg cursor-pointer"
+        >
+          Modifier le profil
+        </button>
+      ) : (
+        <FollowButton
+          userId={userProfile.id}
+          isFollowing={userProfile.isFollowing}
+        />
+      )}
     </>
   );
 }

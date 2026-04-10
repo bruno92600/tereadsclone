@@ -2,10 +2,12 @@
 import { usePathname } from "next/navigation";
 import { navItems } from "./Sidebar";
 import Link from "next/link";
+import { useModalStore } from "@/store/useModalStore";
 
 export default function MobileMenu() {
 
     const pathname = usePathname();
+    const {openCreatePost} = useModalStore();
 
   return (
     <nav className="fixed bottom-0 left-0 w-full h-16 bg-background flex items-center justify-around md:hidden">
@@ -15,6 +17,7 @@ export default function MobileMenu() {
             if (item.isAction) {
             return (
               <button
+                onClick={openCreatePost}
                 key={index}
                 className="px-6 py-3 bg-surface text-white rounded-md shadow-lg hover:scale-105 transition"
               >

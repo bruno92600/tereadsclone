@@ -11,6 +11,7 @@ import {
 import Logo from "./Logo";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useModalStore } from "@/store/useModalStore";
 
 interface NavItem {
   href?: string;
@@ -28,6 +29,7 @@ export const navItems: NavItem[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const {openCreatePost} = useModalStore();
 
   return (
     <aside className="hidden md:flex items-center justify-between flex-col w-20 fixed z-100 top-0 left-0 h-screen">
@@ -40,6 +42,7 @@ export default function Sidebar() {
           if (item.isAction) {
             return (
               <button
+                onClick={openCreatePost}
                 key={index}
                 className="p-4 bg-surface text-white rounded-md hover:opacity-80 transition"
               >

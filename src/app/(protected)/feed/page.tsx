@@ -1,9 +1,7 @@
-import Container from "@/components/layouts/Container";
+import Feeds from "@/components/feed/Feeds";
 
 export default function FeedsPage() {
   return (
-    <Container title="Pour toi">
-      <div className="text-white">feed page</div>
-    </Container>
+      <Feeds />
   )
 }
