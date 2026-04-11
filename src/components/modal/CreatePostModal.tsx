@@ -11,6 +11,7 @@ import Image from "next/image";
 import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
 import PostButton from "../ui/PostButton";
 import axios from "axios";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function CreatePostModal() {
   const [content, setContent] = useState("");
@@ -21,6 +22,7 @@ export default function CreatePostModal() {
   const { isCreatePostOpen, closeCreatePost } = useModalStore();
   const { data: session } = authClient.useSession();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -58,6 +60,8 @@ export default function CreatePostModal() {
       setContent("");
       setImageFile(null);
       setImagePreview(null);
+
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
 
       closeCreatePost();
     } catch (error) {
