@@ -6,7 +6,6 @@ import Image from "next/image";
 import { User } from "@/types/user";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { set } from "better-auth";
 import { useRouter } from "next/navigation";
 
 interface ProfileModalProps {

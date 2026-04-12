@@ -1,3 +1,4 @@
+import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/server-actions/getCurrentUser";
 import { NextResponse } from "next/server";
 
@@ -17,6 +18,41 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
+
+    const existingLike = await prisma.like.findUnique({
+      where: {
+        userId_postId: {
+          userId: currentUser.id,
+          postId,
+        },
+      },
+    });
+
+    if (existingLike) {
+      await prisma.like.delete({
+        where: {
+          userId_postId: {
+            userId: currentUser.id,
+            postId,
+          },
+        },
+      });
+
+      return NextResponse.json({
+        liked: false,
+      });
+    }
+
+    await prisma.like.create({
+      data: {
+        userId: currentUser.id,
+        postId,
+      },
+    });
+
+    return NextResponse.json({
+      liked: true,
+    });
   } catch (error) {
     console.error("LIKE_POST_ERROR", error);
 

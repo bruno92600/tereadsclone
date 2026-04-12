@@ -2,7 +2,7 @@
 
 import { useModalStore } from "@/store/useModalStore";
 import Modal from "./Modal";
-import { use, useState } from "react";
+import { useState } from "react";
 import { usePostStore } from "@/store/usePostStore";
 import Feed from "../feed/Feed";
 import { authClient } from "@/lib/auth-client";

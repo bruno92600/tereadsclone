@@ -4,6 +4,7 @@ import { useModalStore } from "@/store/useModalStore";
 import { usePostStore } from "@/store/usePostStore";
 import { Post } from "@/types/post";
 import { MessageCircle } from "lucide-react";
+import LikeButton from "./LikeButton";
 
 export default function PostActions({ post }: { post: Post }) {
   const { openReplyPost } = useModalStore();
@@ -12,6 +13,11 @@ export default function PostActions({ post }: { post: Post }) {
   return (
     <div className="flex items-center text-xs text-text-muted mt-2">
       {/* like button */}
+      <LikeButton
+        postId={post.id}
+        initialCount={post._count.likes}
+        initialLiked={post.likes.length > 0}
+      />
       <div
         onClick={() => {
           openReplyPost();
